@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  lslidar-driver:
+    build: .
+    container_name: lslidar_driver
+    network_mode: host
+    privileged: true
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+      - /dev:/dev
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${XAUTHORITY}:/root/.Xauthority
+      - ./params:/ros_ws/src/lslidar_driver/lslidar_driver/params:ro
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+    command: >
+      bash -c "ros2 launch lslidar_driver lslidar_launch.py"
+    restart: unless-stopped
